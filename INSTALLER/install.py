@@ -1,3 +1,4 @@
+#!/usr/bin/python
 # make sure you have python>=3.13.7
 
 from pathlib import Path
@@ -29,7 +30,6 @@ if confirmation.lower() == "y":
 
     for folder in folders:
         dest = config_folder / folder
-        print(dest)
         full_path = parent_dir / folder
         full_folders.append(full_path)
         if dest.exists():
