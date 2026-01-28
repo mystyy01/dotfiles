@@ -1,0 +1,27 @@
+# Global Git configuration
+# Put machine- or user-specific settings in ~/.gitconfig.local
+
+[include]
+    path = ~/.gitconfig.local
+
+[init]
+    defaultBranch = main
+
+[core]
+    editor = vim
+    excludesFile = ~/.config/git/ignore
+
+[color]
+    ui = auto
+
+[pull]
+    rebase = false
+
+[fetch]
+    prune = true
+
+[push]
+    default = simple
+
+[rerere]
+    enabled = true

@@ -1,0 +1,17 @@
+# OS
+.DS_Store
+Thumbs.db
+.AppleDouble
+.LSOverride
+
+# Editors
+*.swp
+*.swo
+*.tmp
+*~
+.idea/
+.vscode/
+*.code-workspace
+
+# Logs
+*.log

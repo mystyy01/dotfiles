@@ -1,5 +1,5 @@
 [global]
-  font = "Product Sans"
+  font = "JetBrains Mono Nerd Font 10"
 
 	# Allow a small subset of html markup:
 	# <b>bold</b>
@@ -152,6 +152,9 @@
 
 	# Align icons left/right/off
 	icon_position = left
+
+	# Custom icon paths (colon-separated)
+	icon_path = ~/.config/dunst/assets/notification:~/.config/dunst/assets/ui
 
     # Scale small icons up to this size, set to 0 to disable. Helpful
     # for e.g. small files or high-dpi screens. In case of conflict,
