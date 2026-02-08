@@ -8,7 +8,6 @@ PACMAN_PKGS=(
   hyprland
   waybar
   kitty
-  ulauncher
   swaybg
   swaync
   nwg-dock-hyprland
@@ -24,8 +23,6 @@ PACMAN_PKGS=(
   fcitx5
   blueman
   dunst
-  light
-  brillo
   python
   python-pip
 )

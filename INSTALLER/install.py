@@ -32,6 +32,14 @@ file_targets = {
     repo_root / "home" / ".zshrc": home / ".zshrc",
     repo_root / "home" / ".gitconfig": home / ".gitconfig",
     repo_root / "home" / ".local" / "bin" / "mt-fetch": home / ".local" / "bin" / "mt-fetch",
+    repo_root / "home" / ".local" / "bin" / "riced-fetch": home / ".local" / "bin" / "riced-fetch",
+    repo_root
+    / "home"
+    / ".local"
+    / "share"
+    / "figlet"
+    / "fonts"
+    / "ANSI Shadow.flf": home / ".local" / "share" / "figlet" / "fonts" / "ANSI Shadow.flf",
 }
 
 print("WARNING: this may overwrite existing configs/files for:\n")

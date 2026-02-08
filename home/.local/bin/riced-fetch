@@ -1,0 +1,108 @@
+#!/usr/bin/env sh
+
+# Riced fetch banner: figlet greeting + fastfetch/neofetch
+
+user="${USER:-${LOGNAME:-user}}"
+
+# Top greeting
+FIGLET_FONTDIR="${FIGLET_FONTDIR:-${XDG_DATA_HOME:-$HOME/.local/share}/figlet/fonts}"
+FIGLET_FONT="ansi-shadow"
+if command -v figlet >/dev/null 2>&1; then
+    printf '\033[38;5;81m'
+    if [ -r "${FIGLET_FONTDIR}/ANSI Shadow.flf" ]; then
+        FIGLET_FONT="ANSI Shadow"
+        figlet -d "${FIGLET_FONTDIR}" -f "${FIGLET_FONT}" "hi ${user}" 2>/dev/null || figlet -d "${FIGLET_FONTDIR}" "hi ${user}"
+    elif [ -r "${FIGLET_FONTDIR}/ansi-shadow.flf" ] || [ -r "${FIGLET_FONTDIR}/${FIGLET_FONT}.flf" ]; then
+        figlet -d "${FIGLET_FONTDIR}" -f "${FIGLET_FONT}" "hi ${user}" 2>/dev/null || figlet -d "${FIGLET_FONTDIR}" "hi ${user}"
+    else
+        figlet -f "${FIGLET_FONT}" "hi ${user}" 2>/dev/null || figlet "hi ${user}"
+    fi
+    printf '\033[0m'
+else
+    printf 'hi %s\n' "$user"
+fi
+
+# Prefer fastfetch
+if command -v fastfetch >/dev/null 2>&1; then
+    cfg="$(mktemp "${TMPDIR:-/tmp}/riced-fetch.XXXXXX.jsonc")" || exit 1
+    cat > "$cfg" <<'JSON'
+{
+  "$schema": "https://github.com/fastfetch-cli/fastfetch/raw/master/doc/json_schema.json",
+  "logo": {
+    "type": "auto",
+    "padding": { "right": 4 },
+    "position": "left"
+  },
+  "display": {
+    "separator": "  ",
+    "brightColor": true,
+    "key": { "width": 12 },
+    "color": { "keys": "36", "output": "37", "separator": "90" }
+  },
+  "general": { "detectVersion": true },
+  "modules": [
+    { "type": "custom", "format": "-- System --" },
+    { "type": "os", "key": "OS" },
+    { "type": "kernel", "key": "Kernel" },
+    { "type": "uptime", "key": "Uptime" },
+    { "type": "packages", "key": "Packages" },
+    { "type": "shell", "key": "Shell" },
+    { "type": "break" },
+    { "type": "custom", "format": "-- Display --" },
+    { "type": "display", "key": "Resolution" },
+    { "type": "de", "key": "DE" },
+    { "type": "wm", "key": "WM" },
+    { "type": "break" },
+    { "type": "custom", "format": "-- Hardware --" },
+    { "type": "cpu", "key": "CPU" },
+    { "type": "gpu", "key": "GPU" },
+    { "type": "memory", "key": "Memory" },
+    { "type": "disk", "key": "Disk", "folders": "/" }
+  ]
+}
+JSON
+    fastfetch --config "$cfg"
+    rm -f "$cfg"
+    exit 0
+fi
+
+# Fallback to neofetch
+if command -v neofetch >/dev/null 2>&1; then
+    cfg="$(mktemp "${TMPDIR:-/tmp}/riced-fetch.XXXXXX.conf")" || exit 1
+    cat > "$cfg" <<'NEO'
+print_info() {
+    prin "-- System --"
+    info "OS" distro
+    info "Kernel" kernel
+    info "Uptime" uptime
+    info "Packages" packages
+    info "Shell" shell
+
+    prin ""
+    prin "-- Display --"
+    info "Resolution" resolution
+    info "DE" de
+    info "WM" wm
+
+    prin ""
+    prin "-- Hardware --"
+    info "CPU" cpu
+    info "GPU" gpu
+    info "Memory" memory
+    info "Disk" disk
+}
+
+ascii_distro="auto"
+separator="  "
+colors=(6 6 7 7 8 7)
+# Show only root in disk output
+# (neofetch expects a bash array)
+disk_show=('/')
+NEO
+    neofetch --config "$cfg"
+    rm -f "$cfg"
+    exit 0
+fi
+
+printf '%s\n' "fastfetch or neofetch not found."
+exit 0
