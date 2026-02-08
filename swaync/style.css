@@ -1,0 +1,94 @@
+/* Warm coffee shop swaync theme to match your Waybar palette */
+
+@define-color coffee-bg rgba(43, 29, 22, 0.92);
+@define-color coffee-bg-2 rgba(58, 42, 34, 0.95);
+@define-color coffee-fg #f1e6d8;
+@define-color coffee-muted #cdb7a3;
+@define-color coffee-accent #d7a97b;
+@define-color coffee-rose #d08a78;
+
+* {
+  font-family: JetBrainsMono Nerd Font;
+  font-size: 13px;
+}
+
+.control-center,
+.notification-row {
+  background: transparent;
+}
+
+.control-center {
+  background: @coffee-bg;
+  border-radius: 12px;
+  padding: 10px;
+  margin: 12px;
+}
+
+.control-center .widget-title {
+  color: @coffee-fg;
+  font-weight: 700;
+  padding: 6px 8px;
+}
+
+.control-center .widget-title > button {
+  background: @coffee-bg-2;
+  color: @coffee-muted;
+  border-radius: 10px;
+  border: 1px solid rgba(215, 169, 123, 0.25);
+  padding: 6px 10px;
+}
+
+.control-center .widget-title > button:hover {
+  border-color: rgba(215, 169, 123, 0.55);
+  color: @coffee-fg;
+}
+
+.widget-dnd {
+  background: @coffee-bg-2;
+  border-radius: 12px;
+  padding: 10px 12px;
+  margin: 6px 0 10px 0;
+  color: @coffee-muted;
+  border: 1px solid rgba(215, 169, 123, 0.18);
+}
+
+.notification {
+  background: @coffee-bg-2;
+  border-radius: 12px;
+  padding: 10px 12px;
+  margin: 8px 0;
+  border: 1px solid rgba(215, 169, 123, 0.18);
+}
+
+.notification:hover {
+  border-color: rgba(215, 169, 123, 0.45);
+}
+
+.notification.critical {
+  border-color: rgba(208, 138, 120, 0.70);
+}
+
+.notification .summary {
+  color: @coffee-fg;
+  font-weight: 700;
+}
+
+.notification .body {
+  color: @coffee-muted;
+}
+
+.notification .time {
+  color: rgba(205, 183, 163, 0.75);
+}
+
+.close-button {
+  background: transparent;
+  color: rgba(205, 183, 163, 0.8);
+  border-radius: 8px;
+}
+
+.close-button:hover {
+  background: rgba(43, 29, 22, 0.7);
+  color: @coffee-fg;
+}
+

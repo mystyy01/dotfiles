@@ -1,0 +1,46 @@
+{
+  "$schema": "https://github.com/fastfetch-cli/fastfetch/raw/master/doc/json_schema.json",
+  "logo": {
+    "type": "raw",
+    "source": "           \n          ████          \n         ██████         \n        ████████        \n       ████  ████       \n      ████    ████      \n     ████  ███ ████     \n    ████  ████  ████    \n   ████  ████    ████   \n  ████  ████      ████  \n ████  ████        ████ \n████████████████████████\n",
+    "padding": { "top": 0, "left": 0, "right": 6 },
+    "position": "left"
+  },
+  "display": {
+    "separator": "  ",
+    "brightColor": true,
+    "color": {
+      "keys": "38;5;180",
+      "separator": "38;5;138",
+      "output": "38;5;223"
+    }
+  },
+  "modules": [
+    { "type": "custom", "format": "┌─ Systems ────────────────────────────────┐", "outputColor": "38;5;138" },
+    { "type": "os", "key": " OS" },
+    { "type": "kernel", "key": " Kernel" },
+    { "type": "uptime", "key": " Uptime" },
+    { "type": "packages", "key": " Packages" },
+    { "type": "shell", "key": " Shell" },
+    { "type": "custom", "format": "└──────────────────────────────────────────┘", "outputColor": "38;5;138" },
+    "break",
+
+    { "type": "custom", "format": "┌─ Displays ───────────────────────────────┐", "outputColor": "38;5;138" },
+    { "type": "display", "key": " Resolution" },
+    { "type": "wm", "key": " WM" },
+    { "type": "terminal", "key": " Terminal" },
+    { "type": "terminalfont", "key": " Font" },
+    { "type": "custom", "format": "└──────────────────────────────────────────┘", "outputColor": "38;5;138" },
+    "break",
+
+    { "type": "custom", "format": "┌─ Hardware ───────────────────────────────┐", "outputColor": "38;5;138" },
+    { "type": "host", "key": " Host" },
+    { "type": "cpu", "key": " CPU" },
+    { "type": "gpu", "key": " GPU" },
+    { "type": "memory", "key": " Memory" },
+    { "type": "disk", "key": " Disk" },
+    { "type": "battery", "key": " Battery" },
+    { "type": "custom", "format": "└──────────────────────────────────────────┘", "outputColor": "38;5;138" }
+  ]
+}
+

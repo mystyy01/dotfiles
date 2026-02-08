@@ -1,0 +1,161 @@
+#!/usr/bin/env bash
+set -uo pipefail
+
+# Small wrapper around fastfetch:
+# - Prints "HI <user>" in big ASCII (if figlet is installed), else plain text.
+# - Then runs fastfetch with a curated module list.
+
+user="${USER:-user}"
+user_lc="${user,,}"
+
+if command -v figlet >/dev/null 2>&1; then
+  font="${MT_FETCH_FONT:-ANSI Shadow}"
+  if ! figlet -f "$font" "hi ${user_lc}" 2>/dev/null; then
+    figlet -f slant "hi ${user_lc}" 2>/dev/null || printf 'hi %s\n' "$user_lc"
+  fi
+else
+  printf 'hi %s\n' "$user_lc"
+fi
+
+echo
+
+ff_json="$(fastfetch -j --logo none --structure "OS:Kernel:Uptime:Packages:Shell:Display:WM:Terminal:TerminalFont:Host:CPU:GPU:Memory:Disk:Battery" 2>/dev/null || echo '[]')"
+
+_jqr() {
+  # jq -r, but never fail the whole script
+  jq -r "$@" 2>/dev/null || true
+}
+
+fmt_bytes() {
+  local n="${1:-0}"
+  if command -v numfmt >/dev/null 2>&1; then
+    numfmt --to=iec-i --suffix=B --format="%.2f" "$n" 2>/dev/null || printf '%sB' "$n"
+  else
+    printf '%sB' "$n"
+  fi
+}
+
+arch="$(_jqr '.[] | select(.type=="Kernel") | .result.architecture' <<<"$ff_json" | head -n1)"
+os_id="$(_jqr '.[] | select(.type=="OS") | .result.id' <<<"$ff_json" | head -n1)"
+os_name="$(_jqr '.[] | select(.type=="OS") | .result.prettyName' <<<"$ff_json" | head -n1)"
+os="${os_name:-} ${arch:-x86_64}"
+kernel="$(_jqr '.[] | select(.type=="Kernel") | (.result.name + " " + .result.release)' <<<"$ff_json" | head -n1)"
+uptime_s="$(_jqr '.[] | select(.type=="Uptime") | .result.uptime' <<<"$ff_json" | head -n1)"
+packages="$(_jqr '.[] | select(.type=="Packages") | (.result.pacman|tostring) + " (pacman)[" + (.result.pacmanBranch // "") + "], " + (.result.flatpakSystem|tostring) + " (flatpak)"' <<<"$ff_json" | head -n1)"
+shell="$(_jqr '.[] | select(.type=="Shell") | (.result.prettyName + " " + .result.version)' <<<"$ff_json" | head -n1)"
+
+fmt_uptime() {
+  local s="${1:-0}" d h m
+  d=$((s/86400)); h=$(((s%86400)/3600)); m=$(((s%3600)/60))
+  if (( d > 0 )); then
+    printf '%dd %dh %dm' "$d" "$h" "$m"
+  elif (( h > 0 )); then
+    printf '%dh %dm' "$h" "$m"
+  else
+    printf '%dm' "$m"
+  fi
+}
+
+uptime="$(fmt_uptime "${uptime_s:-0}")"
+
+resolution="$(_jqr '.[] | select(.type=="Display") | (.result[0]? | ((.width|tostring) + "x" + (.height|tostring) + " @ " + (.refreshRate|tostring) + "Hz"))' <<<"$ff_json" | head -n1)"
+wm="$(_jqr '.[] | select(.type=="WM") | (.result.prettyName + " " + .result.version + " (Wayland)")' <<<"$ff_json" | head -n1)"
+term="$(_jqr '.[] | select(.type=="Terminal") | (.result.prettyName + (if (.result.version // "") != "" then " " + .result.version else "" end))' <<<"$ff_json" | head -n1)"
+font="$(_jqr '.[] | select(.type=="TerminalFont") | (.result.font + " (" + (.result.size|tostring) + "pt)")' <<<"$ff_json" | head -n1)"
+
+host="$(_jqr '.[] | select(.type=="Host") | .result.name' <<<"$ff_json" | head -n1)"
+cpu="$(_jqr '.[] | select(.type=="CPU") | (.result.cpu + " (" + (.result.cores.physical|tostring) + ")")' <<<"$ff_json" | head -n1)"
+gpu="$(_jqr '.[] | select(.type=="GPU") | (.result[]? | .name) ' <<<"$ff_json" | head -n1)"
+mem_used="$(_jqr '.[] | select(.type=="Memory") | .result.used' <<<"$ff_json" | head -n1)"
+mem_total="$(_jqr '.[] | select(.type=="Memory") | .result.total' <<<"$ff_json" | head -n1)"
+mem_pct="$(awk -v u="${mem_used:-0}" -v t="${mem_total:-1}" 'BEGIN{printf "%d", (u*100)/t}' 2>/dev/null || echo 0)"
+mem="$(fmt_bytes "$mem_used") / $(fmt_bytes "$mem_total") (${mem_pct}%)"
+
+disk_used="$(_jqr '.[] | select(.type=="Disk") | .result[] | select(.mountpoint=="/") | .bytes.used' <<<"$ff_json" | head -n1)"
+disk_total="$(_jqr '.[] | select(.type=="Disk") | .result[] | select(.mountpoint=="/") | .bytes.total' <<<"$ff_json" | head -n1)"
+disk_fs="$(_jqr '.[] | select(.type=="Disk") | .result[] | select(.mountpoint=="/") | .filesystem' <<<"$ff_json" | head -n1)"
+disk_pct="$(awk -v u="${disk_used:-0}" -v t="${disk_total:-1}" 'BEGIN{printf "%d", (u*100)/t}' 2>/dev/null || echo 0)"
+disk="$(fmt_bytes "$disk_used") / $(fmt_bytes "$disk_total") (${disk_pct}%) - ${disk_fs:-}"
+
+batt_cap="$(_jqr '.[] | select(.type=="Battery") | .result[0].capacity' <<<"$ff_json" | head -n1)"
+batt_status="$(_jqr '.[] | select(.type=="Battery") | .result[0].status' <<<"$ff_json" | head -n1)"
+batt="${batt_cap:-0}% [${batt_status:-}]"
+
+box() {
+  local title="$1"; shift
+  local -a rows=("$@")
+  local inner=50
+  local top="┌─ ${title} "
+  local top_len=${#top}
+  local fill=$((inner - top_len + 2))
+  (( fill < 0 )) && fill=0
+  printf "%s" "$top"
+  for ((i=0; i<fill; i++)); do printf "─"; done
+  printf "┐\n"
+  for row in "${rows[@]}"; do
+    # row is "Key|Value"
+    local k="${row%%|*}"
+    local v="${row#*|}"
+    local content=" ${k}  ${v}"
+    # truncate + pad to inner
+    content="${content:0:$inner}"
+    # Only top/bottom borders (no vertical walls), closer to your preferred look.
+    printf " %-*s \n" "$inner" "$content"
+  done
+  printf "└"
+  for ((i=0; i<inner; i++)); do printf "─"; done
+  printf "┘\n"
+}
+
+# Left-side logo: use fastfetch's builtin distro logo (manjaro/arch/debian/etc).
+# fastfetch may emit cursor movement escapes; we strip them.
+logo_name="${os_id:-arch}"
+mapfile -t LOGO_LINES < <(
+  fastfetch --logo "$logo_name" --structure Break --logo-padding-right 0 --logo-print-remaining true 2>/dev/null |
+    # Strip ANSI control sequences fastfetch may output for cursor positioning.
+    sed -r $'s/\x1b\\[[0-9;?]*[A-Za-z]//g; s/\x1b\\][^\x07]*(\x07|\x1b\\\\)//g' |
+    sed 's/\r//g; s/[[:space:]]*$//'
+)
+
+if (( ${#LOGO_LINES[@]} == 0 )); then
+  LOGO_LINES=("  /\\  " " /  \\ " "/_/\\_\\")
+fi
+
+CONTENT_LINES=()
+while IFS= read -r line; do CONTENT_LINES+=("$line"); done < <(
+  box "Systems" \
+    "OS|${os:-}" \
+    "Kernel|${kernel:-}" \
+    "Uptime|${uptime:-}" \
+    "Packages|${packages:-}" \
+    "Shell|${shell:-}"
+  echo
+  box "Displays" \
+    "Resolution|${resolution:-}" \
+    "WM|${wm:-}" \
+    "Terminal|${term:-}" \
+    "Font|${font:-}"
+  echo
+  box "Hardware" \
+    "Host|${host:-}" \
+    "CPU|${cpu:-}" \
+    "GPU|${gpu:-}" \
+    "Memory|${mem:-}" \
+    "Disk|${disk:-}" \
+    "Battery|${batt:-}"
+)
+
+max=${#CONTENT_LINES[@]}
+(( ${#LOGO_LINES[@]} > max )) && max=${#LOGO_LINES[@]}
+
+leftw=0
+for l in "${LOGO_LINES[@]}"; do
+  (( ${#l} > leftw )) && leftw=${#l}
+done
+leftw=$((leftw + 2))
+
+for ((i=0; i<max; i++)); do
+  left="${LOGO_LINES[i]:-}"
+  right="${CONTENT_LINES[i]:-}"
+  printf "%-*s%s\n" "$leftw" "$left" "$right"
+done

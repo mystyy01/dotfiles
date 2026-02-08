@@ -1,0 +1,52 @@
+/* Warm pill-style dock to match your Waybar theme */
+
+@define-color coffee-bg rgba(43, 29, 22, 0.82);
+@define-color coffee-bg-2 rgba(58, 42, 34, 0.92);
+@define-color coffee-fg #f1e6d8;
+@define-color coffee-muted #cdb7a3;
+@define-color coffee-accent #d7a97b;
+
+* {
+  font-family: JetBrainsMono Nerd Font;
+  font-size: 12px;
+}
+
+window {
+  background: transparent;
+}
+
+/* Container */
+#box {
+  background: @coffee-bg;
+  border-radius: 999px;
+  border: 1px solid rgba(215, 169, 123, 0.16);
+  /* Compact pill to match Waybar */
+  padding: 0px 4px;
+  min-height: 22px;
+}
+
+/* Launchers / tasks */
+button {
+  background: transparent;
+  border-radius: 12px;
+  border: none;
+  padding: 1px 3px;
+  margin: 0 0px;
+  color: @coffee-fg;
+  min-height: 18px;
+}
+
+button:hover {
+  background: rgba(58, 42, 34, 0.75);
+}
+
+button:active {
+  background: rgba(215, 169, 123, 0.18);
+}
+
+image {
+  /* Force smaller icons regardless of source size */
+  min-width: 13px;
+  min-height: 13px;
+  -gtk-icon-transform: scale(0.46);
+}

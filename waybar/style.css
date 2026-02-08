@@ -1,0 +1,332 @@
+* {
+  /* `otf-font-awesome` is required to be installed for icons */
+  font-family: JetBrainsMono Nerd Font;
+  font-size: 12px;
+}
+
+@define-color coffee-bg rgba(43, 29, 22, 0.82);
+@define-color coffee-bg-2 rgba(58, 42, 34, 0.92);
+@define-color coffee-fg #f1e6d8;
+@define-color coffee-muted #cdb7a3;
+@define-color coffee-accent #d7a97b;
+@define-color coffee-accent-2 #c3865a;
+@define-color coffee-rose #d08a78;
+@define-color coffee-sage #a9b8a4;
+
+/* "Segmented pill" style like the screenshot */
+window#waybar {
+  background: transparent;
+  color: @coffee-fg;
+  margin: 8px 10px;
+}
+
+.modules-left,
+.modules-center,
+.modules-right {
+  background: @coffee-bg;
+  border-radius: 999px;
+  padding: 4px 8px;
+  border: 1px solid rgba(215, 169, 123, 0.16);
+}
+
+.modules-center {
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+window#waybar.hidden {
+  opacity: 0.2;
+}
+
+#workspaces button {
+  padding: 0 6px;
+  margin: 0 2px;
+  color: @coffee-muted;
+  background-color: transparent;
+  /* Use box-shadow instead of border so the text isn't offset */
+  box-shadow: inset 0 -3px transparent;
+  /* Avoid rounded borders under each workspace name */
+  border: none;
+  border-radius: 0;
+}
+
+#workspaces button.focused {
+  color: @coffee-rose;
+}
+
+#workspaces button.active {
+  color: @coffee-accent;
+}
+
+#workspaces button.urgent {
+  background-color: @coffee-rose;
+}
+
+#window {
+  /* border-radius: 20px; */
+  /* padding-left: 10px; */
+  /* padding-right: 10px; */
+  color: #64727d;
+}
+
+#clock,
+#battery,
+#cpu,
+#memory,
+#disk,
+#temperature,
+#backlight,
+#network,
+#pulseaudio,
+#custom-media,
+#tray,
+#mode,
+#idle_inhibitor,
+#mpd,
+#bluetooth,
+#custom-hyprPicker,
+#custom-power-menu,
+#custom-spotify,
+#custom-notifications,
+#custom-weather,
+#custom-weather.severe,
+#custom-weather.sunnyDay,
+#custom-weather.clearNight,
+#custom-weather.cloudyFoggyDay,
+#custom-weather.cloudyFoggyNight,
+#custom-weather.rainyDay,
+#custom-weather.rainyNight,
+#custom-weather.showyIcyDay,
+#custom-weather.snowyIcyNight,
+#custom-weather.default {
+  padding: 0 10px;
+  color: @coffee-fg;
+  border-radius: 999px;
+  background-color: transparent;
+}
+
+#window,
+#workspaces {
+  margin: 0 6px;
+  border-radius: 999px;
+  background-color: transparent;
+}
+
+#cpu {
+  color: @coffee-rose;
+  background-color: @coffee-bg-2;
+}
+
+#memory {
+  color: @coffee-accent;
+  background-color: @coffee-bg-2;
+}
+
+#custom-power-menu {
+  border-radius: 999px;
+  background-color: transparent;
+  padding: 0 5px;
+}
+
+#custom-launcher {
+  background-color: transparent;
+  color: @coffee-accent;
+  border-radius: 999px;
+  padding: 0 3px;
+}
+
+#custom-weather.severe {
+  color: @coffee-rose;
+}
+
+#custom-weather.sunnyDay {
+  color: @coffee-accent;
+}
+
+#custom-weather.clearNight {
+  color: @coffee-muted;
+}
+
+#custom-weather.cloudyFoggyDay,
+#custom-weather.cloudyFoggyNight {
+  color: #c2ddda;
+}
+
+#custom-weather.rainyDay,
+#custom-weather.rainyNight {
+  color: @coffee-sage;
+}
+
+#custom-weather.showyIcyDay,
+#custom-weather.snowyIcyNight {
+  color: #d6e7e5;
+}
+
+#custom-weather.default {
+  color: @coffee-muted;
+}
+
+/* If workspaces is the leftmost module, omit left margin */
+.modules-left > widget:first-child > #workspaces {
+  margin-left: 0;
+}
+
+/* If workspaces is the rightmost module, omit right margin */
+.modules-right > widget:last-child > #workspaces {
+  margin-right: 0;
+}
+
+#pulseaudio {
+  color: @coffee-muted;
+}
+
+#backlight {
+  color: @coffee-sage;
+}
+
+#clock {
+  color: @coffee-fg;
+}
+
+#battery {
+  color: @coffee-muted;
+}
+
+#battery.charging,
+#battery.full,
+#battery.plugged {
+  color: @coffee-sage;
+}
+
+@keyframes blink {
+  to {
+    background-color: rgba(58, 42, 34, 0.6);
+    color: @coffee-muted;
+  }
+}
+
+#battery.critical:not(.charging) {
+  color: @coffee-rose;
+  animation-name: blink;
+  animation-duration: 0.5s;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  animation-direction: alternate;
+}
+
+label:focus {
+  background-color: #000000;
+}
+
+#disk {
+  background-color: @coffee-accent-2;
+}
+
+#bluetooth {
+  color: @coffee-muted;
+}
+
+#bluetooth.disconnected {
+  color: @coffee-rose;
+}
+
+#network {
+  color: @coffee-accent-2;
+}
+
+#network.disconnected {
+  color: @coffee-rose;
+}
+
+#custom-media {
+  background-color: @coffee-sage;
+  color: @coffee-bg;
+  min-width: 100px;
+}
+
+#custom-media.custom-spotify {
+  background-color: #66cc99;
+}
+
+#custom-media.custom-vlc {
+  background-color: @coffee-accent-2;
+}
+
+#temperature {
+  background-color: @coffee-accent-2;
+}
+
+#temperature.critical {
+  background-color: @coffee-rose;
+}
+
+#tray > .passive {
+  -gtk-icon-effect: dim;
+}
+
+#tray > .needs-attention {
+  -gtk-icon-effect: highlight;
+  background-color: @coffee-rose;
+}
+
+#idle_inhibitor {
+  background-color: @coffee-bg-2;
+}
+
+#idle_inhibitor.activated {
+  background-color: @coffee-fg;
+  color: @coffee-bg;
+}
+
+#mpd {
+  color: @coffee-sage;
+}
+
+#mpd.disconnected {
+  color: @coffee-rose;
+}
+
+#mpd.stopped {
+  color: @coffee-muted;
+}
+
+#mpd.paused {
+  color: @coffee-sage;
+}
+
+#language {
+  background: @coffee-sage;
+  color: @coffee-bg;
+  padding: 0 5px;
+  margin: 0 5px;
+  min-width: 16px;
+}
+
+#keyboard-state {
+  background: @coffee-accent-2;
+  color: @coffee-bg;
+  padding: 0 0px;
+  margin: 0 5px;
+  min-width: 16px;
+}
+
+#keyboard-state > label {
+  padding: 0 5px;
+}
+
+#custom-spotify {
+  padding: 0 10px;
+  margin: 0 4px;
+  /* background-color: #1db954; */
+  color: @coffee-muted;
+}
+
+#custom-notifications {
+  padding: 0 10px;
+  margin: 0 4px;
+  color: @coffee-accent;
+}
+
+#keyboard-state > label.locked {
+  background: rgba(0, 0, 0, 0.2);
+}

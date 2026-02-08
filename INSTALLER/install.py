@@ -17,15 +17,21 @@ backup_root = home / ".dotfiles_backup" / datetime.now().strftime("%Y%m%d-%H%M%S
 
 config_dirs = {
     "hyprland": config_folder / "hypr",
-    "dunst": config_folder / "dunst",
-    "rofi": config_folder / "rofi",
     "kitty": config_folder / "kitty",
+    "waybar": config_folder / "waybar",
+    "swaync": config_folder / "swaync",
+    "nwg-dock-hyprland": config_folder / "nwg-dock-hyprland",
+    "fastfetch": config_folder / "fastfetch",
+    # Keep existing folders in the repo, but we don't install them by default anymore:
+    # - dunst (replaced by swaync)
+    # - rofi (replaced by ulauncher)
 }
 
 file_targets = {
     repo_root / "git" / "ignore": config_folder / "git" / "ignore",
     repo_root / "home" / ".zshrc": home / ".zshrc",
     repo_root / "home" / ".gitconfig": home / ".gitconfig",
+    repo_root / "home" / ".local" / "bin" / "mt-fetch": home / ".local" / "bin" / "mt-fetch",
 }
 
 print("WARNING: this may overwrite existing configs/files for:\n")
@@ -78,5 +84,9 @@ for src, dest in file_targets.items():
     dest.parent.mkdir(parents=True, exist_ok=True)
     print(f"Installing: {dest}")
     shutil.copy2(src, dest)
+
+print("\nNOTE: packages are not installed automatically.")
+print("Suggested pacman packages: hyprland waybar kitty ulauncher swaybg swaync nwg-dock-hyprland fastfetch figlet wl-clipboard grim slurp")
+print("Suggested AUR packages (optional): figlet-fonts")
 
 print(f"\nDone. Backups stored in: {backup_root}")
